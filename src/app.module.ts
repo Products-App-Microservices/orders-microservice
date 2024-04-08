@@ -4,13 +4,15 @@ import { Module } from '@nestjs/common';
 import { OrdersModule } from './orders/orders.module';
 
 import { EnvConfig } from './config/envConfig';
+import { NatsModule } from './transports/nats.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [ EnvConfig ]
     }),
-    OrdersModule
+    OrdersModule,
+    NatsModule
   ],
   controllers: [],
   providers: [],

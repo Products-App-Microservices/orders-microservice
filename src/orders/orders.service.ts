@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { OrderPaginationDto, UpdateOrderStatusDto } from './dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 
-import { PRODUCTS_MICROSERVICE } from 'src/config/services';
+import { NATS_SERVICE } from 'src/config/services';
 
 @Injectable()
 export class OrdersService extends PrismaClient implements OnModuleInit {
@@ -14,8 +14,8 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
   private readonly logger = new Logger(OrdersService.name);
 
   constructor(
-    @Inject(PRODUCTS_MICROSERVICE)
-    private readonly producstService: ClientProxy,
+    @Inject(NATS_SERVICE)
+    private readonly client: ClientProxy,
   ) {
     super();
   }
@@ -31,7 +31,7 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
       const productIds = createOrderDto.items.map( item => item.productId);
 
       const products = await firstValueFrom(
-        this.producstService.send({ cmd: 'validate_product' }, productIds),
+        this.client.send({ cmd: 'validate_product' }, productIds),
       );
 
       const totalAmount = createOrderDto.items.reduce(( acc, item ) => {
@@ -128,7 +128,7 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
     const productIds = order.OrderItem.map(product => product.productId);
 
     const products = await firstValueFrom(
-      this.producstService.send({ cmd: 'validate_product' }, productIds),
+      this.client.send({ cmd: 'validate_product' }, productIds),
     );
 
     return {
