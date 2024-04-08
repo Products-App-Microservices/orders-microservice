@@ -4,7 +4,6 @@ import { Type } from "class-transformer";
 
 import { OrderStatusEnum } from "../enum/order-status.enum";
 
-
 export class OrderPaginationDto {
 
     @IsNumber()
