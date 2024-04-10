@@ -9,7 +9,7 @@ import { OrderPaginationDto, UpdateOrderStatusDto } from './dto';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  @MessagePattern({ cmd: 'create' })
+  @MessagePattern({ cmd: 'create_order' })
   create(@Payload() createOrderDto: CreateOrderDto) {
     return this.ordersService.create(createOrderDto);
   }
