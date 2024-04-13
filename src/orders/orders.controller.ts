@@ -1,17 +1,23 @@
 import { Controller, NotImplementedException, ParseUUIDPipe } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrdersService } from './orders.service';
-import { OrderPaginationDto, UpdateOrderStatusDto } from './dto';
+import { ChargeSucceededDto, OrderPaginationDto, UpdateOrderStatusDto } from './dto';
 
 @Controller()
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @MessagePattern({ cmd: 'create_order' })
-  create(@Payload() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
+  async create(@Payload() createOrderDto: CreateOrderDto) {
+    const order = await this.ordersService.create(createOrderDto);
+    const paymentSession = await this.ordersService.createPaymentSession(order);
+
+    return {
+      order,
+      paymentSession,
+    }
   }
 
   @MessagePattern({ cmd: 'find_all' })
@@ -27,6 +33,11 @@ export class OrdersController {
   @MessagePattern({ cmd: 'update_order_status' })
   updateOrderStatus(@Payload() updateOrderStatusDto: UpdateOrderStatusDto) {
     return this.ordersService.updateOrderStatus(updateOrderStatusDto);
+  }
+
+  @EventPattern('charge.succeeded')
+  paymentReceived(@Payload() chargeSucceededDto: ChargeSucceededDto) {
+    return this.ordersService.paymentReceived(chargeSucceededDto);
   }
 
 }

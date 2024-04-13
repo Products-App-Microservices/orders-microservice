@@ -46,11 +46,13 @@ model OrderItem {
 }
 
 model OrderReceipt {
-  id        String @id @default(uuid())
+  id          String @id @default(uuid())
 
-  Order     Order @relation(fields: [ orderId ], references: [ id ])
-  orderId   String @unique
+  receiptUrl  String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  Order       Order @relation(fields: [ orderId ], references: [ id ])
+  orderId     String @unique
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
